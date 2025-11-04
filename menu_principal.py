@@ -1,7 +1,7 @@
-from edicion_archivo import agregar_paises, eliminar_pais, modificar_archivo, leer_todos_los_paises_recursivo
-from validaciones import validar_texto
-from ver_informacion_paises import ver_informacion_pais
-from filtrar_paises import paises_continente, ordenar_alfabetico, estadisticas_pais
+from editar_archivo import agregar_paises, eliminar_pais, modificar_archivo, leer_todos_los_paises_recursivo
+from validar import validar_texto
+from ver_informacion_de_paises import ver_informacion_pais
+from filtrar_los_paises import paises_continente, ordenar_alfabetico, estadisticas_pais
 import os
 
 DATA_DIR = "data"

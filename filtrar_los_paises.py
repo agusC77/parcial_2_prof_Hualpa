@@ -1,5 +1,5 @@
-from edicion_archivo import leer_todos_los_paises_recursivo
-from ver_informacion_paises import eliminar_acentos
+from editar_archivo import leer_todos_los_paises_recursivo
+from ver_informacion_de_paises import eliminar_acentos
 
 def paises_continente(base_dir):
     print("=== Mostrar países por continente ===")

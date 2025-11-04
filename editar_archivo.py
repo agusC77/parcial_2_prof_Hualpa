@@ -1,6 +1,6 @@
 import os
 import csv
-from validaciones import validar_texto, numero_positivo
+from validar import validar_texto, numero_positivo
 
 ENCABEZADO = ["País", "Continente", "Población", "Superficie"]
 
