@@ -1,5 +1,6 @@
 import os
 import csv
+import shutil
 from validar import *
 
 ENCABEZADO = ["País", "Continente", "Población", "Superficie"]
@@ -117,10 +118,15 @@ def agregar_paises(base_dir="data"):
 #==========================================================================================================================
 
 # Función para eliminar un país del archivo
-def eliminar_pais(Directorio_datos, pais_a_eliminar):
+import os
+import csv
+import shutil
+
+def eliminar_pais(base_dir, pais_a_eliminar):
     print(f"=== Eliminar país: {pais_a_eliminar.title()} ===")
     pais_a_eliminar = pais_a_eliminar.lower()
     encontrados = []
+
     def _recorrer(dirpath):
         for entry in os.listdir(dirpath):
             ruta = os.path.join(dirpath, entry)
@@ -133,26 +139,37 @@ def eliminar_pais(Directorio_datos, pais_a_eliminar):
                         if row.get("País", "").lower() == pais_a_eliminar:
                             encontrados.append(ruta)
 
-    if not os.path.exists(Directorio_datos):
-        print("No existe la carpeta base.")
+    if not os.path.exists(base_dir):
+        print(" No existe la carpeta base.")
         return
-    _recorrer(Directorio_datos)
+
+    _recorrer(base_dir)
+
     if not encontrados:
-        print("País no encontrado.\n")
+        print(" País no encontrado.\n")
         return
 
     for ruta in encontrados:
-        os.remove(ruta)
-        print(f"Archivo eliminado: {ruta}")
-        pais_dir = os.path.dirname(ruta)
-        cont_dir = os.path.dirname(pais_dir)
-        if not os.listdir(pais_dir):
-            os.rmdir(pais_dir)
-            print(f"Carpeta eliminada: {pais_dir}")
-        if not os.listdir(cont_dir):
-            os.rmdir(cont_dir)
-            print(f"Carpeta eliminada: {cont_dir}")
-    print("Eliminación completada.\n")
+        try:
+            os.remove(ruta)
+            print(f"🗑️ Archivo eliminado: {ruta}")
+            pais_dir = os.path.dirname(ruta)
+            cont_dir = os.path.dirname(pais_dir)
+
+            # Elimina la carpeta completa del país (si queda vacía o bloqueada)
+            if os.path.exists(pais_dir):
+                shutil.rmtree(pais_dir, ignore_errors=True)
+                print(f"📁 Carpeta del país eliminada: {pais_dir}")
+
+            # Si el continente queda vacío, también se borra
+            if os.path.exists(cont_dir) and not os.listdir(cont_dir):
+                os.rmdir(cont_dir)
+                print(f"🌍 Carpeta del continente eliminada: {cont_dir}")
+
+        except Exception as e:
+            print(f"⚠️ Error al eliminar {ruta}: {e}")
+
+    print("✅ Eliminación completada.\n")
 
 #============================================================================================================================
 
