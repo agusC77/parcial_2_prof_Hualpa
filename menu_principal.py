@@ -7,6 +7,14 @@ import os
 # Define una variable con el nombre de un directorio/carpeta
 DIRECTORIO_DATOS = "datos"
 
+# Verifica si existe al menos un archivo info.csv en la carpeta de datos.
+def hay_datos_creados(directorio):
+    for ruta_actual, _, archivos in os.walk(directorio):
+        for archivo in archivos:
+            if archivo.lower() == "info.csv":
+                return True
+    return False
+
 if __name__ == "__main__":
     # Crea la carpeta datos si no existe, caso contrario exist_ok=True permite que no se genere un error
     os.makedirs(DIRECTORIO_DATOS, exist_ok=True)
@@ -30,9 +38,10 @@ if __name__ == "__main__":
             case "1":
                 agregar_paises(DIRECTORIO_DATOS)
             case "2":
-                print("Buscar país por nombre:")
-                texto = validar_texto()
-                ver_informacion_pais(DIRECTORIO_DATOS, texto)
+                if os.path.exists():
+                    print("Buscar país por nombre:")
+                    texto = validar_texto()
+                    ver_informacion_pais(DIRECTORIO_DATOS, texto)
             case "3":
                 print("Filtrar países por continente:")
                 paises_continente(DIRECTORIO_DATOS)
