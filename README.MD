@@ -15,6 +15,6 @@ El sistema utiliza una estructura jerárquica de carpetas para organizar la info
 
 Para leer toda la información almacenada, el programa utiliza recursividad. Esto significa que una función recorre todas las carpetas dentro de “datos” y sus subcarpetas de manera automática, buscando archivos “info.csv” sin necesidad de indicar manualmente las rutas. Así, si se agregan nuevos continentes o países, el sistema los detecta de forma automática y los incluye al mostrar los datos. Este diseño jerárquico y recursivo permite mantener los archivos organizados, facilitar la búsqueda y modificación de la información, y hacer que el sistema pueda crecer fácilmente sin cambiar la lógica del programa.
 
-Link de video explicativo:
+Link de video explicativo: https://youtu.be/QNVEO9-3jhk
 
 Link del github: https://github.com/agusC77/parcial_2_prof_Hualpa.git
