@@ -1,31 +1,48 @@
 import os
 import csv
-from validar import validar_texto, numero_positivo
+from validar import *
 
 ENCABEZADO = ["País", "Continente", "Población", "Superficie"]
 
+#==========================================================================================================================
+# Función que devuelve la ruta completa del archivo
 def ruta_info(cont, pais):
-    return os.path.join("data", cont.lower(), pais.lower(), "info.csv")
+    # Retorna (datos/continente/pais/info.csv)
+    return os.path.join("datos", cont.lower(), pais.lower(), "info.csv")
+
+#==========================================================================================================================
 
 def crear_jerarquia_y_guardar(cont, pais, poblacion, superficie):
     print(f"Creando jerarquía para {pais.title()} en {cont.title()}...")
-    cont_dir = os.path.join("data", cont.lower())
-    pais_dir = os.path.join(cont_dir, pais.lower())
-    os.makedirs(pais_dir, exist_ok=True)
-    path = ruta_info(cont, pais)
-    existe = os.path.exists(path)
-    with open(path, "a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=ENCABEZADO)
-        if not existe:
-            print("Creando nuevo archivo con encabezado.")
-            writer.writeheader()
-        writer.writerow({
-            "País": pais,
-            "Continente": cont,
-            "Población": poblacion,
-            "Superficie": superficie
-        })
-    print(f"Datos de {pais.title()} guardados correctamente en {path}.\n")
+    # Almacena en directorio_continente la siguiente ruta "datos/continente_dle_país_elejido"
+    directorio_continente = os.path.join("datos", cont.lower())
+    # Almacena en directorio_pais la siguiente ruta "datos/nombre_continente/pais_ingresado"
+    directorio_pais = os.path.join(directorio_continente, pais.lower())
+    # Crea las carpetas indicadas en la ruta (datos/america/argentina) si no existen.
+    # Si ya existen, no hace nada por el parámetro (exist_ok=True).
+    os.makedirs(directorio_pais, exist_ok=True)
+    # En la variable ruta_completa almacena la ruta completa hacia el archivo.
+    ruta_completa = ruta_info(cont, pais)
+    # Verifica si el archivo existe en el sistema
+    existe = os.path.exists(ruta_completa)
+    # Valida que no se haya ingresado antes.
+    ya_ingresado = validar_pais(ruta_completa, pais)
+
+    if ya_ingresado:
+        return True
+    else:
+        # Agrega un país con su información al archivo
+        with open(ruta_completa, "a", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=ENCABEZADO)
+            # Si el archivo no existe lo crea, y agrega el encabezado
+            if not existe:
+                print("Creando nuevo archivo con encabezado.")
+                writer.writeheader()
+            # Agrega una linea con la información del país
+            writer.writerow({"País": pais, "Continente": cont, "Población": poblacion, "Superficie": superficie})
+        
+        print(f"Datos de {pais.title()} guardados correctamente en {ruta_completa}.\n")
+#==========================================================================================================================
 
 def agregar_paises(base_dir="data"):
     print("=== Agregar país ===")
@@ -33,7 +50,11 @@ def agregar_paises(base_dir="data"):
         print("Error: No se encontró el archivo paises.csv.")
         return
 
+    # Variable que almacenara un país como key y el continente al que pertenece como value
     paises_base = {}
+    # Recorre linea por linea el archivo, cada linea se transforma en una lista para poder obtener el nombre del país 
+    # y su continente por separado. Esto permitira agregar al diccionario paises_base una key que sera el nombre del 
+    # país y un value que sera el continente al que pertenece.
     with open("paises.csv", "r", encoding="utf-8") as archivo:
         for linea in archivo:
             partes = linea.strip().split(",")
@@ -45,35 +66,54 @@ def agregar_paises(base_dir="data"):
     while True:
         print("Ingrese el nombre del país:")
         nombre_pais = validar_texto().strip().lower()
+        print()
 
         if nombre_pais not in paises_base:
             print("El país no está en la base de datos. Intente nuevamente.")
+            print()
             continue
 
+        # A continente se le asigna el valor asociado a la key de paises_base
         continente = paises_base[nombre_pais]
         print(f"Continente asignado automáticamente: {continente.title()}")
+        print()
 
         print("Ingrese la población:")
         while True:
-            poblacion = numero_positivo().strip()
+            poblacion = numero_positivo()
+            print()
             if poblacion.isdigit():
                 break
             print("Ingrese un número entero positivo para población.")
 
         print("Ingrese la superficie:")
         while True:
-            superficie = numero_positivo().strip()
+            superficie = numero_positivo()
+            print()
             try:
                 float(superficie)
                 break
             except ValueError:
                 print("Ingrese un número válido para superficie.")
 
-        crear_jerarquia_y_guardar(continente, nombre_pais, poblacion, superficie)
-        more = input("¿Desea agregar otro país? (1=Sí, 2=No): ").strip()
-        if more != "1":
+        # Agrega la información del país a un archivo en caso de que no haya sido ingresado, caso contrario
+        # Le informamos al usuario que el país ya habia sido ingresado y le pedimos que ingrese otro
+        if crear_jerarquia_y_guardar(continente, nombre_pais, poblacion, superficie):
+            print(f"Error, el país {nombre_pais} ya se ha ingresado. Por favor intente con otro \n")
+            continue
+        
+        opcion = ""
+        while opcion not in ["1", "2"]:
+            opcion = input("¿Desea agregar otro país? (1=Sí, 2=No): ").strip()
+            print()
+            if  not opcion in ["1", "2"]:
+                print("Error, porfavor ingrse un úmero entre 1 y 2")
+        if opcion == "2":
             print("Finalizando carga de países.\n")
+            print()
             break
+
+#==========================================================================================================================
 
 def eliminar_pais(base_dir, pais_a_eliminar):
     print(f"=== Eliminar país: {pais_a_eliminar.title()} ===")
