@@ -127,6 +127,7 @@ def eliminar_pais(base_dir, pais_a_eliminar):
     pais_a_eliminar = pais_a_eliminar.lower()
     encontrados = []
 
+    # Recorre las carpetas buscando archivos info.csv
     def _recorrer(dirpath):
         for entry in os.listdir(dirpath):
             ruta = os.path.join(dirpath, entry)
@@ -139,16 +140,19 @@ def eliminar_pais(base_dir, pais_a_eliminar):
                         if row.get("País", "").lower() == pais_a_eliminar:
                             encontrados.append(ruta)
 
+    # Verifica que la carpeta base exista
     if not os.path.exists(base_dir):
         print(" No existe la carpeta base.")
         return
 
     _recorrer(base_dir)
 
+    # Si no se encuentra el país
     if not encontrados:
         print(" País no encontrado.\n")
         return
 
+    # Elimina los archivos y carpetas relacionadas
     for ruta in encontrados:
         try:
             os.remove(ruta)
@@ -156,12 +160,12 @@ def eliminar_pais(base_dir, pais_a_eliminar):
             pais_dir = os.path.dirname(ruta)
             cont_dir = os.path.dirname(pais_dir)
 
-            # Elimina la carpeta completa del país (si queda vacía o bloqueada)
+            # Borra la carpeta del país
             if os.path.exists(pais_dir):
                 shutil.rmtree(pais_dir, ignore_errors=True)
                 print(f"📁 Carpeta del país eliminada: {pais_dir}")
 
-            # Si el continente queda vacío, también se borra
+            # Borra la carpeta del continente si queda vacía
             if os.path.exists(cont_dir) and not os.listdir(cont_dir):
                 os.rmdir(cont_dir)
                 print(f"🌍 Carpeta del continente eliminada: {cont_dir}")
@@ -170,6 +174,7 @@ def eliminar_pais(base_dir, pais_a_eliminar):
             print(f"⚠️ Error al eliminar {ruta}: {e}")
 
     print("✅ Eliminación completada.\n")
+
 
 #============================================================================================================================
 
