@@ -17,4 +17,3 @@ Para leer toda la información almacenada, el programa utiliza recursividad. Est
 
 Link de video explicativo: https://youtu.be/QNVEO9-3jhk
 
-Link del github: https://github.com/agusC77/parcial_2_prof_Hualpa.git
