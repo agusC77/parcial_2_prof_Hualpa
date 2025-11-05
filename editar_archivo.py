@@ -42,6 +42,7 @@ def crear_jerarquia_y_guardar(cont, pais, poblacion, superficie):
             writer.writerow({"País": pais, "Continente": cont, "Población": poblacion, "Superficie": superficie})
         
         print(f"Datos de {pais.title()} guardados correctamente en {ruta_completa}.\n")
+
 #==========================================================================================================================
 
 def agregar_paises(base_dir="data"):
@@ -115,7 +116,8 @@ def agregar_paises(base_dir="data"):
 
 #==========================================================================================================================
 
-def eliminar_pais(base_dir, pais_a_eliminar):
+# Función para eliminar un país del archivo
+def eliminar_pais(Directorio_datos, pais_a_eliminar):
     print(f"=== Eliminar país: {pais_a_eliminar.title()} ===")
     pais_a_eliminar = pais_a_eliminar.lower()
     encontrados = []
@@ -131,10 +133,10 @@ def eliminar_pais(base_dir, pais_a_eliminar):
                         if row.get("País", "").lower() == pais_a_eliminar:
                             encontrados.append(ruta)
 
-    if not os.path.exists(base_dir):
+    if not os.path.exists(Directorio_datos):
         print("No existe la carpeta base.")
         return
-    _recorrer(base_dir)
+    _recorrer(Directorio_datos)
     if not encontrados:
         print("País no encontrado.\n")
         return
@@ -152,70 +154,107 @@ def eliminar_pais(base_dir, pais_a_eliminar):
             print(f"Carpeta eliminada: {cont_dir}")
     print("Eliminación completada.\n")
 
-def modificar_archivo(base_dir, pais_modificar):
+#============================================================================================================================
+
+def modificar_archivo(directorio_datos, pais_modificar):
     print(f"=== Modificar datos del país: {pais_modificar.title()} ===")
     pais_modificar = pais_modificar.lower()
     encontrados = []
-    def _buscar(dirpath):
-        for entry in os.listdir(dirpath):
-            ruta = os.path.join(dirpath, entry)
+    # Función interna recursiva para buscar dentro de subcarpetas.
+    def _buscar(ruta_actual):
+        # Recorre cada elemento de la carpeta indicada en ruta_actual.
+        for elemento in os.listdir(ruta_actual):
+            # Genera una nueva ruta con uno de los elemento del archivo
+            ruta = os.path.join(ruta_actual, elemento)
+            # Si la ruta generada es para abrir un archivo llama nuevamente a la función
             if os.path.isdir(ruta):
                 _buscar(ruta)
-            elif entry.lower() == "info.csv":
-                with open(ruta, "r", encoding="utf-8", newline="") as f:
-                    reader = csv.DictReader(f)
-                    rows = list(reader)
-                    for row in rows:
-                        if row.get("País", "").lower() == pais_modificar:
-                            encontrados.append((ruta, rows))
+            # Si la ruta te lleva a un archivo llamado info.csv
+            elif elemento.lower() == "info.csv":
+                # Abre el archivo y genera una lista de diccionarios donde cada diccionario es un país con su información
+                with open(ruta, "r", encoding="utf-8", newline="") as archivo:
+                    diccionario = csv.DictReader(archivo)
+                    lista = list(diccionario)
+                    for fila in lista:
+                        if fila.get("País", "").lower() == pais_modificar:
+                            encontrados.append((ruta, lista))
                             return
-    _buscar(base_dir)
+    _buscar(directorio_datos)
     if not encontrados:
         print("El país no se encontró.")
         return
 
-    ruta, rows = encontrados[0]
-    print(f"Archivo encontrado: {ruta}")
-    print("¿Qué desea modificar?")
-    print("1) Población")
-    print("2) Superficie")
-    print("3) Ambos")
-    opcion = input("Seleccione una opción: ").strip()
+# Se le asigna a ruta la ruta del archivo y a linea_archivo la lista de diccionarios
+    ruta, linea_archivo = encontrados[0]
+    while True:
+        print(f"Archivo encontrado: {ruta}")
+        print("¿Qué desea modificar?")
+        print("1) Población")
+        print("2) Superficie")
+        print("3) Ambos")
+        opcion = input("Seleccione una opción: ").strip()
+        if opcion not in ["1", "2", "3"]:
+            print("Por favor ingrese un número entre 1 y 3")
+            continue
+        break
 
+    # Le pide al usuario que ingrese la población del país
     if opcion in ["1", "3"]:
         print("Ingrese nueva población:")
         poblacion = numero_positivo().strip()
-        for r in rows:
-            if r["País"].lower() == pais_modificar:
-                r["Población"] = poblacion
+        for pais in linea_archivo:
+            if pais["País"].lower() == pais_modificar:
+                pais["Población"] = poblacion
+    # Le pide al usuario que ingrese la superficie
     if opcion in ["2", "3"]:
         print("Ingrese nueva superficie:")
         superficie = numero_positivo().strip()
-        for r in rows:
-            if r["País"].lower() == pais_modificar:
-                r["Superficie"] = superficie
+        for pais in linea_archivo:
+            if pais["País"].lower() == pais_modificar:
+                pais["Superficie"] = superficie
 
+    # Sobre escrive el archivo con los valores modificados
     with open(ruta, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=ENCABEZADO)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(linea_archivo)
     print("Datos modificados correctamente.\n")
 
-def leer_todos_los_paises_recursivo(base_dir):
+#============================================================================================================================
+
+# Función que almacenara todos los países en una lista
+def leer_todos_los_paises_recursivo(directorio_actual):
     print("=== Lectura recursiva de todos los países ===")
     resultados = []
-    def _leer(dirpath):
-        for entry in os.listdir(dirpath):
-            ruta = os.path.join(dirpath, entry)
+    # Función interna recursiva para buscar dentro de subcarpetas.
+    def _leer(ruta_actual):
+        # Recorre cada elemento de la carpeta indicada en ruta_actual.
+        # Recorrera todos los elementosde de la carpeta datos  para almacenar 
+        # todos los países de todos los archivos info.csv en una lista.
+        for elemento in os.listdir(ruta_actual):
+            # Genera una nueva ruta con uno de los elementos de la carpeta
+            ruta = os.path.join(ruta_actual, elemento)
+
+            # Si el elemento es una carpeta, vuelve a llamar a _buscar dentro de ella
             if os.path.isdir(ruta):
                 print(f"Entrando en carpeta: {ruta}")
                 _leer(ruta)
-            elif entry.lower() == "info.csv":
+            
+            # Si el elemento es un archivo llamado "info.csv"
+            elif elemento.lower() == "info.csv":
                 print(f"Leyendo archivo: {ruta}")
-                with open(ruta, "r", encoding="utf-8", newline="") as f:
-                    reader = csv.DictReader(f)
-                    for row in reader:
-                        resultados.append(row)
-    _leer(base_dir)
+                # Genera una lista de diccionario donde cada diccionario es un país con su información
+                with open(ruta, "r", encoding="utf-8", newline="") as archivo:
+                    diccionario = csv.DictReader(archivo)
+                    lista = list(diccionario)
+
+                    # Almecena el país en una lista
+                    for pais in lista:
+                        resultados.append(pais)
+    
+    # Inicia la búsqueda desde la carpeta raíz
+    _leer(directorio_actual)
     print(f"Lectura completa. Se encontraron {len(resultados)} registros.\n")
     return resultados
+
+#============================================================================================================================

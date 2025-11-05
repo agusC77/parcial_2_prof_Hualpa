@@ -7,6 +7,8 @@ import os
 # Define una variable con el nombre de un directorio/carpeta
 DIRECTORIO_DATOS = "datos"
 
+#============================================================================================================================
+
 # Verifica si existe al menos un archivo info.csv en la carpeta de datos.
 def hay_datos_creados(directorio):
     for ruta_actual, _, archivos in os.walk(directorio):
@@ -14,6 +16,8 @@ def hay_datos_creados(directorio):
             if archivo.lower() == "info.csv":
                 return True
     return False
+
+#============================================================================================================================
 
 if __name__ == "__main__":
     # Crea la carpeta datos si no existe, caso contrario exist_ok=True permite que no se genere un error
@@ -36,6 +40,7 @@ if __name__ == "__main__":
 
         # Opciones que requieren que existan datos previamente
         opciones_requieren_datos = {"2", "3", "4", "5", "6", "7", "8"}
+        # En cao de que no exista ningún archivo info.csv no podran ejecutarse estas opciones
         if opcion in opciones_requieren_datos and not hay_datos_creados(DIRECTORIO_DATOS):
             print("Primero debe agregar al menos un país (opción 1).\n")
             continue    
@@ -44,7 +49,6 @@ if __name__ == "__main__":
             case "1":
                 agregar_paises(DIRECTORIO_DATOS)
             case "2":
-                if os.path.exists():
                     print("Buscar país por nombre:")
                     texto = validar_texto()
                     ver_informacion_pais(DIRECTORIO_DATOS, texto)
