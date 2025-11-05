@@ -34,6 +34,12 @@ if __name__ == "__main__":
         opcion = input("Seleccione una opción: ").strip()
         print()
 
+        # Opciones que requieren que existan datos previamente
+        opciones_requieren_datos = {"2", "3", "4", "5", "6", "7", "8"}
+        if opcion in opciones_requieren_datos and not hay_datos_creados(DIRECTORIO_DATOS):
+            print("Primero debe agregar al menos un país (opción 1).\n")
+            continue    
+
         match opcion:
             case "1":
                 agregar_paises(DIRECTORIO_DATOS)
