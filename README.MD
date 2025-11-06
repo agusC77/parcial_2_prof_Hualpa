@@ -30,4 +30,5 @@ diseño jerárquico y recursivo permite mantener los archivos organizados, facil
 que el sistema pueda crecer fácilmente sin cambiar la lógica del programa.
 
 -**Link de video explicativo:** https://youtu.be/QNVEO9-3jhk
--**Link repositorio de Git HuB:** https://github.com/agusC77/parcial_2_prof_Hualpa.git
+
+-**Link de Git HuB:** https://github.com/agusC77/parcial_2_prof_Hualpa.git
