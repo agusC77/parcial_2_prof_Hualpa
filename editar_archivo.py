@@ -156,24 +156,24 @@ def eliminar_pais(base_dir, pais_a_eliminar):
     for ruta in encontrados:
         try:
             os.remove(ruta)
-            print(f"🗑️ Archivo eliminado: {ruta}")
+            print(f"Archivo eliminado: {ruta}")
             pais_dir = os.path.dirname(ruta)
             cont_dir = os.path.dirname(pais_dir)
 
             # Borra la carpeta del país
             if os.path.exists(pais_dir):
                 shutil.rmtree(pais_dir, ignore_errors=True)
-                print(f"📁 Carpeta del país eliminada: {pais_dir}")
+                print(f"Carpeta del país eliminada: {pais_dir}")
 
             # Borra la carpeta del continente si queda vacía
             if os.path.exists(cont_dir) and not os.listdir(cont_dir):
                 os.rmdir(cont_dir)
-                print(f"🌍 Carpeta del continente eliminada: {cont_dir}")
+                print(f"Carpeta del continente eliminada: {cont_dir}")
 
         except Exception as e:
             print(f"⚠️ Error al eliminar {ruta}: {e}")
 
-    print("✅ Eliminación completada.\n")
+    print("Eliminación completada.\n")
 
 
 #============================================================================================================================
